@@ -3,8 +3,6 @@
  * Invitations management plugin using Italian Certified Mail System (PEC)
  * and Italian Public Digital Identity Service (SPID)
  *
- * @author Davide Porrovecchio <davide.porrovecchio@agid.gov.it>
- * @author Giacomo Iacuaniello <giacomo.iacuaniello@agid.gov.it>
  * @license GPL v3
  * @version 1.0b
  *
