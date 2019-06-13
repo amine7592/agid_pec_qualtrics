@@ -36,7 +36,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     protected $storage = "DbStorage";
 
     //TODO
-    private $email_debug = true;
+    private $email_debug = false;
 
 
     protected $settings = array(
@@ -1012,7 +1012,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     private function get_qualtrics_link($ente_link, $usr_data)
     {
 
-        return $ente_link . "&sid=" . base64_encode($usr_data->spidcode . " " . $usr_data->familyname . " " . $usr_data->name);
+        return $ente_link . "&sid=" . base64_encode($usr_data->fiscalnumber . " " . $usr_data->familyname . " " . $usr_data->name);
     }
 
     private function str_endWith($haystack, $needle)
