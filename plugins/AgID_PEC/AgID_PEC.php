@@ -27,17 +27,18 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     private $_imgAssetsURL;
     private $ssp;
     private $dbms;
-    
+
     private $logoutRedirectURL;
-    
+
     protected static $description = "Gestione inviti via PEC";
+    private $PASS_PHRASE = "spidQualtrics";
     protected static $name = "AgID_PEC";
     protected $storage = "DbStorage";
 
-    private $email_debug = false;
-    
-    
-    
+    //TODO
+    private $email_debug = true;
+
+
     protected $settings = array(
         "PEC_SMTP_host" => array(
             "type" => "string",
@@ -105,7 +106,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             "default" => "sp-questionari",
             "help" => "Default is 'sp-questionari' change it if needed"
         ),
-        
+
         "SpidLogoutRedirectURL" => array(
             "type" => "string",
             "label" => "URL to redirect after SPID Logout",
@@ -121,7 +122,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             "default" => 1,
             "label" => "Survey Platform"
         ),
-        
+
         "spidTestIDPEnabled" => array(
             "type" => "select",
             "options" => array(
@@ -153,86 +154,86 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     {
         $oEvent = $this->event;
         $oEvent->set("surveysettings.{$this->id}", array(
-            "name" => get_class($this),
-            "settings" => array(
-                "InvitationLink_MailSubject_Template" => array(
-                    "type" => "string",
-                    "label" => "Mail Subject Template for Invitation Link",
-                    "help" => "You can use {{SURVEY_TITLE}}  placeholder. Overwritable in each Survey setting.",
-                    "default" => $this->get("InvitationLink_MailSubject_Template", null, null, ""),
-                    "current" => $this->get("InvitationLink_MailSubject_Template", "Survey", $oEvent->get("survey"))
-                ),
-                "InvitationLink_MailBody_Template" => array(
-                    "type" => "text",
-                    "label" => "Mail Body Template for Invitation Link",
-                    "help" => "You can use {{SURVEY_TITLE}} placeholder and you must use {{INVITATION_LINK}} placeholder. Overwritable in each Survey setting.",
-                    "default" => $this->get("InvitationLink_MailBody_Template", null, null, ""),
-                    "current" => $this->get("InvitationLink_MailBody_Template", "Survey", $oEvent->get("survey"))
-                ),
+                "name" => get_class($this),
+                "settings" => array(
+                    "InvitationLink_MailSubject_Template" => array(
+                        "type" => "string",
+                        "label" => "Mail Subject Template for Invitation Link",
+                        "help" => "You can use {{SURVEY_TITLE}}  placeholder. Overwritable in each Survey setting.",
+                        "default" => $this->get("InvitationLink_MailSubject_Template", null, null, ""),
+                        "current" => $this->get("InvitationLink_MailSubject_Template", "Survey", $oEvent->get("survey"))
+                    ),
+                    "InvitationLink_MailBody_Template" => array(
+                        "type" => "text",
+                        "label" => "Mail Body Template for Invitation Link",
+                        "help" => "You can use {{SURVEY_TITLE}} placeholder and you must use {{INVITATION_LINK}} placeholder. Overwritable in each Survey setting.",
+                        "default" => $this->get("InvitationLink_MailBody_Template", null, null, ""),
+                        "current" => $this->get("InvitationLink_MailBody_Template", "Survey", $oEvent->get("survey"))
+                    ),
 
-                "ActivationLink_MailSubject" => array(
-                    "type" => "string",
-                    "label" => "Mail Subject for Activation Link",
-                    "help" => "You can use {{SURVEY_TITLE}} and {{SPID_PARTICIPANT}}  placeholder. Overwritable in each Survey setting.",
-                    "default" => $this->get("ActivationLink_MailSubject", null, null, ""),
-                    "current" => $this->get("ActivationLink_MailSubject", "Survey", $oEvent->get("survey"))
-                ),
-                "ActivationLink_MailBody" => array(
-                    "type" => "text",
-                    "label" => "Mail Body for Activation Link",
-                    "help" => "You can use {{SURVEY_TITLE}}, {{SURVEY_ENTE}}, {{SPID_PARTICIPANT}}, {{SURVEY_TOKEN}} and {{SURVEY_LINK}} placeholder. Overwritable in each Survey setting.",
-                    "default" => $this->get("ActivationLink_MailBody", null, null, ""),
-                    "current" => $this->get("ActivationLink_MailBody", "Survey", $oEvent->get("survey"))
-                ),
-                
-                
-                "SpidLogoutRedirectURL" => array(
-                    "type" => "string",
-                    "label" => "URL to redirect after SPID Logout",
-                    "help" => "Overwritable in each Survey setting.",
-                    "default" => $this->get("SpidLogoutRedirectURL", null, null, ""),
-                    "current" => $this->get("SpidLogoutRedirectURL", "Survey", $oEvent->get("survey"))
-                ),
-                
-                
-                "ente_ipa_code_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant attribute to map  \"ente.ipa_code\"",
-                    "current" => $this->get("ente_ipa_code_mapping", "Survey", $oEvent->get("survey"))
-                    
-                ),
-                "ente_denominazione_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.denominazione\"",
-                    "current" => $this->get("ente_denominazione_mapping", "Survey", $oEvent->get("survey"))
-                ),
-                "ente_cf_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.cf\"",
-                    "current" => $this->get("ente_cf_mapping", "Survey", $oEvent->get("survey"))
-                ),
-                "ente_pec_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.pec\"",
-                    "current" => $this->get("ente_pec_mapping", "Survey", $oEvent->get("survey"))
-                ),
-                "ente_comune_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.comune\"",
-                    "current" => $this->get("ente_comune_mapping", "Survey", $oEvent->get("survey"))
-                ),
-                "ente_desc_categoria_ipa_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.desc_categoria_ipa\"",
-                    "current" => $this->get("ente_desc_categoria_ipa_mapping", "Survey", $oEvent->get("survey"))
-                ),
-                "ente_tipo_ente_custom_mapping" => array(
-                    "type" => "string",
-                    "label" => "Participant Attribute to map  \"ente.tipo_ente_custom\"",
-                    "current" => $this->get("ente_tipo_ente_custom_mapping", "Survey", $oEvent->get("survey"))
+                    "ActivationLink_MailSubject" => array(
+                        "type" => "string",
+                        "label" => "Mail Subject for Activation Link",
+                        "help" => "You can use {{SURVEY_TITLE}} and {{SPID_PARTICIPANT}}  placeholder. Overwritable in each Survey setting.",
+                        "default" => $this->get("ActivationLink_MailSubject", null, null, ""),
+                        "current" => $this->get("ActivationLink_MailSubject", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ActivationLink_MailBody" => array(
+                        "type" => "text",
+                        "label" => "Mail Body for Activation Link",
+                        "help" => "You can use {{SURVEY_TITLE}}, {{SURVEY_ENTE}}, {{SPID_PARTICIPANT}}, {{SURVEY_TOKEN}} and {{SURVEY_LINK}} placeholder. Overwritable in each Survey setting.",
+                        "default" => $this->get("ActivationLink_MailBody", null, null, ""),
+                        "current" => $this->get("ActivationLink_MailBody", "Survey", $oEvent->get("survey"))
+                    ),
+
+
+                    "SpidLogoutRedirectURL" => array(
+                        "type" => "string",
+                        "label" => "URL to redirect after SPID Logout",
+                        "help" => "Overwritable in each Survey setting.",
+                        "default" => $this->get("SpidLogoutRedirectURL", null, null, ""),
+                        "current" => $this->get("SpidLogoutRedirectURL", "Survey", $oEvent->get("survey"))
+                    ),
+
+
+                    "ente_ipa_code_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant attribute to map  \"ente.ipa_code\"",
+                        "current" => $this->get("ente_ipa_code_mapping", "Survey", $oEvent->get("survey"))
+
+                    ),
+                    "ente_denominazione_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.denominazione\"",
+                        "current" => $this->get("ente_denominazione_mapping", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ente_cf_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.cf\"",
+                        "current" => $this->get("ente_cf_mapping", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ente_pec_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.pec\"",
+                        "current" => $this->get("ente_pec_mapping", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ente_comune_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.comune\"",
+                        "current" => $this->get("ente_comune_mapping", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ente_desc_categoria_ipa_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.desc_categoria_ipa\"",
+                        "current" => $this->get("ente_desc_categoria_ipa_mapping", "Survey", $oEvent->get("survey"))
+                    ),
+                    "ente_tipo_ente_custom_mapping" => array(
+                        "type" => "string",
+                        "label" => "Participant Attribute to map  \"ente.tipo_ente_custom\"",
+                        "current" => $this->get("ente_tipo_ente_custom_mapping", "Survey", $oEvent->get("survey"))
+                    )
+
                 )
-                
-               ) 
             )
         );
     }
@@ -263,7 +264,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     {
         $c = $this->getEvent()->get("controller");
         $a = $this->getEvent()->get("action");
-        if ($c == "survey" && $a == "index" && $this->str_endWith(Yii::app()->getRequest()->getPathInfo(), "spidactivation")){
+        if ($c == "survey" && $a == "index" && $this->str_endWith(Yii::app()->getRequest()->getPathInfo(), "spidactivation")) {
             Yii::app()->getClientScript()->registerCssFile(Yii::app()->assetManager->publish(dirname(__FILE__) . "/assets/spid/css/spid-sp-access-button.min.css"));
             Yii::app()->getClientScript()->registerCssFile(Yii::app()->assetManager->publish(dirname(__FILE__) . "/assets/spid/css/spidlogin-custom.css"));
             //Yii::app()->getClientScript()->registerScriptFile(Yii::app()->assetManager->publish(dirname(__FILE__) . "/assets/spid/js/jquery.min.js"));
@@ -288,11 +289,31 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                     "comune text",
                     "desc_categoria_ipa text",
                     "tipo_ente_custom text",
-                    "qualtricks_link text",
+                    "qualtrics_link text",
                     "CONSTRAINT pk_enti PRIMARY KEY (ipa_code)"
                 )
             );
         }
+        if (!$this->api->tableExists($this, "enti")) {
+            $this->api->createTable(
+                $this,
+                "enti",
+                array(
+                    "ipa_code varchar(50) NOT NULL",
+                    "denominazione varchar(255) NOT NULL",
+                    "cf text",
+                    "pec text",
+                    "comune text",
+                    "desc_categoria_ipa text",
+                    "tipo_ente_custom text",
+                    "qualtrics_link text",
+                    "CONSTRAINT pk_enti PRIMARY KEY (ipa_code)"
+                )
+            );
+        }
+
+
+
         if (!$this->api->tableExists($this, "spid_participants")) {
             $this->api->createTable(
                 $this,
@@ -317,7 +338,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                     "ipa_code varchar(50) NOT NULL",
                     "survey_id int NOT NULL",
                     "token_id " . (($this->dbms == "pgsql") ? "int" : "int(11)") . " NOT NULL",
-                    "token text", 
+                    "token text",
                     "pec varchar(75) NOT NULL",
                     "mail_subject text",
                     "mail_text text",
@@ -355,28 +376,28 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             // Append menu
             $event = $this->getEvent();
             $event->append("menuItems", array(
-              new MenuItem(array(
-                  "tooltip" => gT("Gestione inviti PEC"),
-                  "label" => gT("Gestione inviti PEC"),
-                  "href"  => $this->api->createUrl(
-                      "admin/pluginhelper",
-                      array(
-                          "sa" => "sidebody",
-                          "surveyId" => $surveyId,
-                          "plugin" => "AgID_PEC",
-                          "method" => "actionIndex"  // Method name in our plugin
-                      )
-                  ),
-                  "iconClass" => "icon-emailtemplates"
-              ))
-          ));
+                new MenuItem(array(
+                    "tooltip" => gT("Gestione inviti PEC"),
+                    "label" => gT("Gestione inviti PEC"),
+                    "href" => $this->api->createUrl(
+                        "admin/pluginhelper",
+                        array(
+                            "sa" => "sidebody",
+                            "surveyId" => $surveyId,
+                            "plugin" => "AgID_PEC",
+                            "method" => "actionIndex"  // Method name in our plugin
+                        )
+                    ),
+                    "iconClass" => "icon-emailtemplates"
+                ))
+            ));
         }
     }
 
     /**
-    * Append menus to side admin menu bar
-    * @return void
-    */
+     * Append menus to side admin menu bar
+     * @return void
+     */
     public function afterQuickMenuLoad()
     {
         $surveyId = $this->getEvent()->get("aData")["surveyid"];
@@ -408,11 +429,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -432,11 +453,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -458,22 +479,18 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         return $this->renderPartial("index", $data, true);
     }
 
-    
-    
-    
-    
-    
+
     public function addInvitation($surveyId)
     {
         $request = Yii::app()->request;
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -528,28 +545,28 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                 $data["text"] = $text;
                 return $this->renderPartial("index", $data, true);
             } else {
-                
+
                 $invitation = new Invitation;
                 $sameEnteSurveyInvitation = Invitation::model()->findByAttributes(array("ipa_code" => $ipaCode, "survey_id" => $surveyId));
-                
+
                 if (empty($sameEnteSurveyInvitation)) {
                     $token = Token::create($surveyId);
-                    $attrs=$this->tokenPrepareAttribute($surveyId,$ente,true);
+                    $attrs = $this->tokenPrepareAttribute($surveyId, $ente, true);
                     $token->setAttributes($attrs, true);
                     $token->save();
-                    
+
                     $invitation->token_id = $token->tid;
                     $invitation->token = $token->token;
-                    
-                    
+
+
                 } else {
-                    
+
                     $invitation->token_id = $sameEnteSurveyInvitation->token_id;
                     $invitation->token = $sameEnteSurveyInvitation->token;
-                    
-                    
+
+
                 }
-                
+
                 $invitation->ipa_code = $ipaCode;
                 $invitation->survey_id = $surveyId;
                 $invitation->pec = $pec;
@@ -580,11 +597,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -642,9 +659,9 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                 $invitation->pec = $pec;
                 $invitation->mail_subject = $subject;
                 $invitation->mail_text = $text;
-                  
+
                 $invitation->save();
-                
+
                 Yii::app()->user->setFlash("success", gT("Invito all'indagine modificato correttamente."));
                 Yii::app()->getController()->redirect($this->api->createUrl(
                     "admin/pluginhelper",
@@ -668,11 +685,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -718,11 +735,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -760,17 +777,16 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             array(
                 $invitation_link,
                 $survey->defaultlanguage->surveyls_title),
-                $invitation->mail_text
-            );
+            $invitation->mail_text
+        );
         $mail->CharSe = "UTF-8";
-
 
 
         $mail->addAddress($invitation->pec);
 
         //TODO remove
 
-        if($this->email_debug){
+        if ($this->email_debug) {
 
             $mail->smtpConnect([
                 'ssl' => [
@@ -809,11 +825,11 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if ($surveyId instanceof LSHttpRequest) {
             $surveyId = $request->getParam("surveyId");
         }
-        if((string)(int)$surveyId !== (string)$surveyId) {
+        if ((string)(int)$surveyId !== (string)$surveyId) {
             throw new CHttpException(404, gT("Invalid survey id"));
         }
         $survey = Survey::model()->findByPk($surveyId);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
         if (!Permission::model()->hasSurveyPermission($surveyId, "tokens", "create")) {
@@ -852,7 +868,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                 spl_autoload_unregister($function);
             }
 
-            require_once ($simplesamlphp_path . "/lib/_autoload.php");
+            require_once($simplesamlphp_path . "/lib/_autoload.php");
             $saml_authsource = $this->get("saml_authsource", null, null, $this->settings["saml_authsource"]);
             $this->ssp = new SimpleSAML_Auth_Simple($saml_authsource);
 
@@ -871,20 +887,19 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         $invitation = Invitation::model()->findByPk($invitationId);
 
 
-
-        if(empty($invitation)) {
+        if (empty($invitation)) {
             throw new CHttpException(404, gT("Invitation not found"));
         }
 
         $survey = Survey::model()->findByPk($invitation->survey_id);
-        if(empty($survey)) {
+        if (empty($survey)) {
             throw new CHttpException(404, gT("Survey not found"));
         }
 
         $this->checkSPIDAuth($survey);
 
         //check nonce
-        if (empty($nonce) || $invitation->nonce != $nonce){
+        if (empty($nonce) || $invitation->nonce != $nonce) {
             throw new CHttpException(403, gT("Invitation not valid"));
         }
         Yii::app()->controller->layout = "bare";
@@ -902,7 +917,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             $spidParticipant->mobilephone = Yii::app()->getRequest()->getParam("mobilePhone", isset($_SESSION["spidAttribute"]["mobilePhone"][0]) ? $_SESSION["spidAttribute"]["mobilePhone"][0] : "");
             $spidParticipant->email = Yii::app()->getRequest()->getParam("email", isset($_SESSION["spidAttribute"]["email"][0]) ? $_SESSION["spidAttribute"]["email"][0] : "");
 
-            if(empty($spidParticipant->email)) {
+            if (empty($spidParticipant->email)) {
                 throw new CHttpException(404, gT("eMail is mandatary"));
             }
 
@@ -932,17 +947,12 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             $token = TokenDynamic::model($invitation->survey_id)->findByPk($invitation->token_id);
 
 
-
-            //TODO check if qualtrics by Admin UI
             $plaform = $this->get("DefaultSurvey", null, null, $this->settings["DefaultSurvey"]);
             $is_qualtrics = $plaform == 1;
 
 
-            $survey_url  = $is_qualtrics? $ente->qualtricks_link:
+            $survey_url = $is_qualtrics ? $this->get_qualtrics_link($ente->qualtrics_link, $spidParticipant) :
                 $this->api->createUrl("/" . $invitation->survey_id, array("lang" => $survey->language));
-
-
-
 
 
             $mailBody = str_replace(
@@ -965,13 +975,12 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
                 $mailBody
             );
 
-
-
             $sFrom = Yii::app()->getConfig("siteadminname") . " <" . Yii::app()->getConfig("siteadminemail") . ">";
             $mailSend = SendEmailMessage($mailBody, $mailSubject, $spidParticipant->email, $sFrom, "AgID Survey");
 
             if (!$mailSend) {
                 throw new CHttpException(404, gT("Fail send mail"));
+
             }
 
             $renderData = array();
@@ -979,8 +988,8 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             $renderData["spidParticipant"] = $spidParticipant;
             $renderData["surveyTitle"] = $survey->getLocalizedTitle();
             $renderData["surveyId"] = $survey->sid;
-            $renderData["logoutURL"] = $this->activationURL."&logout";
-            
+            $renderData["logoutURL"] = $this->activationURL . "&logout";
+
             Yii::app()->controller->render("AgID_PEC.views.spidParticipantActivated", $renderData);
             Yii::app()->end();
 
@@ -999,6 +1008,12 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         }
     }
 
+
+    private function get_qualtrics_link($ente_link, $usr_data)
+    {
+
+        return $ente_link . "&sid=" . base64_encode($usr_data->spidcode . " " . $usr_data->familyname . " " . $usr_data->name);
+    }
 
     private function str_endWith($haystack, $needle)
     {
@@ -1025,9 +1040,9 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         }
         if (isset($_REQUEST["logout"])) {
             setcookie("spid_participant", "", time() - 3600, "/");
-            
-            $this->logoutRedirectURL=$this->getOverwritableSetting('SpidLogoutRedirectURL',$oSurvey->sid);
-            
+
+            $this->logoutRedirectURL = $this->getOverwritableSetting('SpidLogoutRedirectURL', $oSurvey->sid);
+
             set_error_handler(function ($errno, $errstr, $errfile, $errline) {
                 session_destroy();
                 header("Location: " . $this->logoutRedirectURL);
@@ -1041,7 +1056,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
             restore_error_handler();
             restore_exception_handler();
         }
-        if (! isset($_SESSION["spidAttribute"])) {
+        if (!isset($_SESSION["spidAttribute"])) {
             $_SESSION["spidAttribute"] = $ssp->getAttributes();
             setcookie("spid_participant", $ssp->getAttributes()["name"][0] . " " . $ssp->getAttributes()["familyName"][0], null, "/");
         }
@@ -1071,7 +1086,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         if (isset($pURL["query"])) {
             $queryPart;
             parse_str($pURL["query"], $queryPart);
-            foreach($queryPart as $pName => $pVal){
+            foreach ($queryPart as $pName => $pVal) {
                 if (!in_array($pName, $removePars)) $params .= "&" . $pName . "=" . $pVal;
             }
         }
@@ -1084,48 +1099,72 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
         $onSurveyOpt = $this->get($name, "Survey", $sid);
         $globalDefaultOpt = isset($this->settings[$name]["default"]) ? $this->settings[$name]["default"] : NULL;
         $globalOpt = $this->get($name, null, null, $globalDefaultOpt);
-        return  (empty($onSurveyOpt) ? $globalOpt : $onSurveyOpt);
+        return (empty($onSurveyOpt) ? $globalOpt : $onSurveyOpt);
     }
-    
-    
-    
-    private function tokenPrepareAttribute($surveyId,&$ente,$generateToken=true){
-            
-            $attributes=array(
-                "firstname" => $ente->denominazione,
-                "lastname" => $ente->ipa_code
+
+
+    private function tokenPrepareAttribute($surveyId, &$ente, $generateToken = true)
+    {
+
+        $attributes = array(
+            "firstname" => $ente->denominazione,
+            "lastname" => $ente->ipa_code
+        );
+
+        if ($generateToken) $attributes["token"] = Token::generateRandomToken(35);
+
+        $aTokenFieldNames = Yii::app()->db->getSchema()->getTable("{{tokens_$surveyId}}", true);
+
+        if (isset($aTokenFieldNames)) {
+
+            $enteFieldsMapping = array(
+                'ente_ipa_code_mapping' => 'ipa_code',
+                'ente_denominazione_mapping' => 'denominazione',
+                'ente_cf_mapping' => 'cf',
+                'ente_pec_mapping' => 'pec',
+                'ente_comune_mapping' => 'comune',
+                'ente_desc_categoria_ipa_mapping' => 'desc_categoria_ipa',
+                'ente_tipo_ente_custom_mapping' => 'tipo_ente_custom',
             );
-            
-            if ($generateToken) $attributes["token"] = Token::generateRandomToken(35);
-            
-            $aTokenFieldNames=Yii::app()->db->getSchema()->getTable("{{tokens_$surveyId}}",true);
-            
-            if (isset($aTokenFieldNames)){
-                
-                $enteFieldsMapping=array(
-                    'ente_ipa_code_mapping'=>'ipa_code',
-                    'ente_denominazione_mapping'=>'denominazione',
-                    'ente_cf_mapping'=>'cf',
-                    'ente_pec_mapping'=>'pec',
-                    'ente_comune_mapping'=>'comune',
-                    'ente_desc_categoria_ipa_mapping'=>'desc_categoria_ipa',
-                    'ente_tipo_ente_custom_mapping'=>'tipo_ente_custom',
-                );
-                
-                foreach($enteFieldsMapping as $mapping_key => $ente_field){
-                    $attribute=$this->get($mapping_key, "Survey", $surveyId);
-                    
-                    if (empty($attribute)) continue;
-                    
-                    $column=$aTokenFieldNames->getColumn($attribute);
-                    
-                    if(isset($column)) $attributes[$attribute]=$ente[$ente_field];
-                }
+
+            foreach ($enteFieldsMapping as $mapping_key => $ente_field) {
+                $attribute = $this->get($mapping_key, "Survey", $surveyId);
+
+                if (empty($attribute)) continue;
+
+                $column = $aTokenFieldNames->getColumn($attribute);
+
+                if (isset($column)) $attributes[$attribute] = $ente[$ente_field];
             }
-           
-            return $attributes;
-        
+        }
+
+        return $attributes;
+
     }
-    
-    
+
+
+    /**
+     * Encrypt value to a cryptojs compatiable json encoding string
+     *
+     * @param mixed $passphrase
+     * @param mixed $value
+     * @return string
+     */
+    function cryptoJsAesEncrypt($passphrase, $value)
+    {
+        $salt = openssl_random_pseudo_bytes(8);
+        $salted = '';
+        $dx = '';
+        while (strlen($salted) < 48) {
+            $dx = md5($dx . $passphrase . $salt, true);
+            $salted .= $dx;
+        }
+        $key = substr($salted, 0, 32);
+        $iv = substr($salted, 32, 16);
+        $encrypted_data = openssl_encrypt(json_encode($value), 'aes-256-cbc', $key, true, $iv);
+        $data = array("ct" => base64_encode($encrypted_data), "iv" => bin2hex($iv), "s" => bin2hex($salt));
+        return json_encode($data);
+    }
+
+
 }
