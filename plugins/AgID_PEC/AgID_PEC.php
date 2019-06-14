@@ -36,7 +36,7 @@ class AgID_PEC extends \ls\pluginmanager\PluginBase
     protected $storage = "DbStorage";
 
     //TODO
-    private $email_debug = true;
+    private $email_debug = false;
 
 
     protected $settings = array(
