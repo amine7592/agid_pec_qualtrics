@@ -23,8 +23,17 @@ dal commento
 
 
 ## Struttura JSON
-Questa integrazione avviene tramite la trasmissione di un file JSON criptato strutturato in questo modo:
+Questa integrazione avviene tramite la trasmissione di un file JSON criptato in **query string** con chiave ```sid```
 
+
+### Esempio:
+
+**Token query parameter**
+
+``sid=ewsdcgfhvgeyJmaXNjYWxudW1iZXIiOiIxMTEyMjIzMzMyMjIzMzQ0IiwibmFtZSI6IkNsYXVkaW8iLCJtb2JpbGVwaG9uZSI6IjMzMzQzMTk2OTciLCJlbWFpbCI6ImFtaW5lQHdpbmsuYnkiLCJmYW1pbHluYW1lIjoiQmlhbmNhbGFuYSIsInNwaWRjb2RlIjoiRENCQTAxMjM0NTY3ODkifQ``
+
+
+**JSON**
 
 ```
 {
