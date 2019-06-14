@@ -407,7 +407,10 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     element.style.display = "block"
     element.style.left = "-380px";
     /*Place your JavaScript here to run when the page is fully displayed*/
-    
+
+
+    /*** Limesurvey integration starts here ***/
+
     var getQueryVariable = function(variable) {
         var query = window.location.search.substring(1);
         var vars = query.split("&");
@@ -421,15 +424,12 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     };
 
     var encrypted = getQueryVariable("sid").replace("ewsdcgfhvg","");
-    console.log(encrypted);
-    
+
     var usr = JSON.parse(atob(encrypted));
-    
-    console.log(usr);
-    
-    var fiscalnumber = (usr.fiscalnumber.indexOf("TINIT") == -1 ) ? ("TINIT-" + usr.fiscalnumber) : usr.fiscalnumber; 
-    console.log(fiscalnumber);
-    
+    var fiscalnumber = (usr.fiscalnumber.indexOf("TINIT") === -1 ) ? ("TINIT-" + usr.fiscalnumber) : usr.fiscalnumber;
+
+    /*** replace this code if you want to show or use JSON data in an other way ***/
+
     $("#USRINFO ").text(usr.name + " " + usr.familyname + " " + fiscalnumber + " " + usr.email);
 
 
