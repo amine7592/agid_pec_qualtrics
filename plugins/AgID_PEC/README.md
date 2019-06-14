@@ -1,20 +1,20 @@
 # Qualtrics integration
  
-### Introuzione
-Questo documento descrive un esempio di integrazione di ```AgID_Limesurvey``` con **Qualtrics**. Dalla link d'invito inviata tramite il sistema Limesurvey, in Qualtrics vengono visualizzati nel primo blocco i dati dell'utente autenticato precedentemente con ```SpiD```.
+### Intrdouzione
+Questo documento descrive un esempio di integrazione di ```AgID_Limesurvey``` con **Qualtrics**. Dal link d'invito inviata tramite il sistema Limesurvey, in Qualtrics vengono visualizzati nel primo blocco i dati dell'utente autenticato precedentemente con ```SpiD```.
 
 
 
 ## HTML
 
-Inerire nel blocco di "benvenuto" il codice html contenuto in ```qualtrics_welcome_block.html```.
+Inserire nel blocco di "benvenuto" il codice html contenuto in ```qualtrics_welcome_block.html```.
 I dati dell'utente verranno stampati nel TAG ```<span id="USRINFO"></span>```
 
 
 ## Javascript
 
 Aprire l'editor JS nel blocco di "benvenuto" e sostituire il codice contenuto in ```qualtrics.js```.
-Se il contenuto precedente è stato inserito per ragioni specifiche inserire ESCLUSIVAMENTE lo snippet del nel metodo
+Se il contenuto precedente è stato inserito per ragioni specifiche inserire ESCLUSIVAMENTE lo snippet nel metodo
 ```Qualtrics.SurveyEngine.addOnReady```
 
 dal commento 
