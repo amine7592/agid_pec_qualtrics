@@ -4,8 +4,6 @@ if (!defined("BASEPATH"))
 /**
  * Invitations management plugin using Italian Certified Mail System (PEC)
  *
- * @author Davide Porrovecchio <davide.porrovecchio@agid.gov.it>
- * @version 0.1
  */
 
 /*
