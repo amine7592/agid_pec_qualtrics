@@ -426,7 +426,7 @@ Qualtrics.SurveyEngine.addOnReady(function() {
     var encrypted = getQueryVariable("sid").replace("ewsdcgfhvg","");
 
     var usr = JSON.parse(atob(encrypted));
-    var fiscalnumber = (usr.fiscalnumber.indexOf("TINIT") === -1 ) ? ("TINIT-" + usr.fiscalnumber) : usr.fiscalnumber;
+    var fiscalnumber = (usr.fiscalnumber.indexOf("TINIT-") > -1 ) ? usr.fiscalnumber.replace("TINIT-","") : usr.fiscalnumber;
 
     /*** replace this code if you want to show or use JSON data in an other way ***/
 
